@@ -50,6 +50,18 @@ In order to use the MSSQL Integration it is required to configure `mssql-config.
 
 You can view your data in Insights by creating your own custom NRQL queries. To do so use the **MssqlDatabaseSample**, **MssqlInstanceSample** event type.
 
+## Encrypted password
+To use an encrypted in the OHI's configuration file:
+1. Encrypt and encode the password, result goes to stdout
+  - `bin/nr-mssql -encrypt -rsa_private_key <full_path_to_rsa_private_key> -password <password>`
+2. Use the result of #1 in the OHI's config file as the `password`
+3. Add `rsa_private_key: <full_path_to_rsa_private_key>` to the OHI's config file
+4. Check your work with 
+  - `bin/nr-mssql -verbose -rsa_private_key <full_path_to_rsa_private_key> -username <username> -password <encoded_password_from_step_1`
+5. Ensure the RSA private key is available to the OHI
+  
+_NOTE_: this does not provide over the wire encryption of the password to the database. This allows the OHI to use an encrypted password in the configuration file.
+
 ## Compatibility
 
 * Supported OS: No Limitations

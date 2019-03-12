@@ -44,3 +44,4 @@ debug
 **/Product.wxs
 pkg/windows/**/bin
 pkg/windows/**/obj
+tmp/

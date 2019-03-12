@@ -1,3 +1,4 @@
+PATH         := $(PATH):$(GOPATH)/bin
 WORKDIR      := $(shell pwd)
 TARGET       := target
 TARGET_DIR    = $(WORKDIR)/$(TARGET)

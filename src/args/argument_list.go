@@ -3,6 +3,8 @@ package args
 
 import (
 	"errors"
+	"fmt"
+	"os"
 
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
 	"github.com/newrelic/infra-integrations-sdk/log"
@@ -20,10 +22,17 @@ type ArgumentList struct {
 	TrustServerCertificate bool   `default:"false" help:"If true server certificate is not verified for SSL. If false certificate will be verified against supplied certificate"`
 	CertificateLocation    string `default:"" help:"Certificate file to verify SSL encryption against"`
 	Timeout                string `default:"30" help:"Timeout in seconds for a single SQL Query. Set 0 for no timeout"`
+	RSAPrivateKey          string `default:"" help:"Absolute path to RSA private key (pem) file. If present assume the password is RSA encrypted and base64 encoded."`
+	Encrypt                bool   `default:"false" help:"If true encrypt and encode password, write password to stdout and exit"`
 }
 
 // Validate validates SQL specific arguments
 func (al ArgumentList) Validate() error {
+	if al.Encrypt {
+		fmt.Printf("Encrypted and encoded password: \n%s\n", encryptPassword(al))
+		os.Exit(0)
+	}
+
 	if al.Username == "" {
 		return errors.New("invalid configuration: must specify a username")
 	}
@@ -43,5 +52,8 @@ func (al ArgumentList) Validate() error {
 		return errors.New("invalid configuration: must specify a certificate file when using SSL and not trusting server certificate")
 	}
 
+	if err := decryptPassword(al); err != nil {
+		return err
+	}
 	return nil
 }
