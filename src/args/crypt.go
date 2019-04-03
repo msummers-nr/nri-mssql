@@ -14,7 +14,7 @@ import (
 )
 
 // If RSAPrivateKey is present then we assume the password is RSA encrypted and base64 encoded
-func decryptPassword(al ArgumentList) error {
+func decryptPassword(al *ArgumentList) error {
 	if al.RSAPrivateKey == "" {
 		return nil
 	}
@@ -46,7 +46,7 @@ func decryptPassword(al ArgumentList) error {
 	return nil
 }
 
-func encryptPassword(al ArgumentList) string {
+func encryptPassword(al *ArgumentList) string {
 	if al.RSAPrivateKey == "" {
 		log.Error("encrypt: rsa_private_key is a required parameter")
 		return ""
@@ -59,10 +59,13 @@ func encryptPassword(al ArgumentList) string {
 	}
 
 	block, _ := pem.Decode(pemString)
+	if block == nil {
+		log.Error("encrypt: Unable to decode private key, ensure you're passing an RSA private key pem file")
+		return ""
+	}
+
 	key, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 	if err != nil {
-		log.Error("encrypt: Unable to parse private key. err: %s", err)
-		return ""
 	}
 
 	label := []byte("")

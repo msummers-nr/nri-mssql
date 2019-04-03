@@ -27,7 +27,7 @@ type ArgumentList struct {
 }
 
 // Validate validates SQL specific arguments
-func (al ArgumentList) Validate() error {
+func (al *ArgumentList) Validate() error {
 	if al.Encrypt {
 		fmt.Printf("Encrypted and encoded password: \n%s\n", encryptPassword(al))
 		os.Exit(0)
